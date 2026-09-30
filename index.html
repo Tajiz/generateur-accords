@@ -176,6 +176,43 @@
     transform: translateY(0px) scale(0.98);
   }
 
+  .diagrams {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 8px;
+    min-height: 118px;
+    align-items: flex-start;
+  }
+
+  .diagrams.empty-state {
+    align-items: center;
+  }
+
+  .diagrams-hint {
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .diagram {
+    width: 78px;
+  }
+
+  .diagram svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .diagram-label {
+    display: block;
+    margin-top: 6px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 15px;
+    color: var(--ink);
+  }
+
   .pool {
     margin-top: 30px;
     padding-top: 22px;
@@ -210,14 +247,79 @@
 
   <button type="button" class="generate" onclick="generate()">Générer</button>
 
+  <div class="diagrams empty-state" id="diagrams" aria-live="polite">
+    <span class="diagrams-hint">Les schémas de tablature s'affichent ici après génération.</span>
+  </div>
+
   <p class="pool"><strong>Accords utilisés</strong><br>C · A · Am · E · Em · D · Dm · G</p>
 </main>
 
 <script>
   const CHORDS = ['C', 'A', 'Am', 'E', 'Em', 'D', 'Dm', 'G'];
+  // Position ouverte, du Mi grave (corde 6) au Mi aigu (corde 1).
+  // 'x' = corde étouffée, 0 = corde à vide, 1-4 = numéro de case.
+  const SHAPES = {
+    C:  ['x', 3, 2, 0, 1, 0],
+    A:  ['x', 0, 2, 2, 2, 0],
+    Am: ['x', 0, 2, 2, 1, 0],
+    E:  [0, 2, 2, 1, 0, 0],
+    Em: [0, 2, 2, 0, 0, 0],
+    D:  ['x', 'x', 0, 2, 3, 2],
+    Dm: ['x', 'x', 0, 2, 3, 1],
+    G:  [3, 2, 0, 0, 0, 3]
+  };
   let length = 4;
   let current = new Array(length).fill(null);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function chordSVG(name) {
+    const frets = SHAPES[name];
+    const xs = [10, 26, 42, 58, 74, 90];
+    const fretY = [20, 36, 52, 68, 84];
+    let s = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
+
+    // cordes
+    xs.forEach(x => {
+      s += `<line x1="${x}" y1="20" x2="${x}" y2="84" stroke="var(--ink-soft)" stroke-width="1.2"/>`;
+    });
+
+    // frettes (la première plus épaisse = sillet)
+    fretY.forEach((y, i) => {
+      s += `<line x1="10" y1="${y}" x2="90" y2="${y}" stroke="var(--ink-soft)" stroke-width="${i === 0 ? 3 : 1}"/>`;
+    });
+
+    // symboles et positions des doigts
+    frets.forEach((f, i) => {
+      const x = xs[i];
+      if (f === 'x') {
+        s += `<text x="${x}" y="11" text-anchor="middle" font-size="11" fill="var(--ink-soft)">×</text>`;
+      } else if (f === 0) {
+        s += `<circle cx="${x}" cy="8" r="4" fill="none" stroke="var(--ink-soft)" stroke-width="1.4"/>`;
+      } else {
+        const y = 20 + 16 * (f - 0.5);
+        s += `<circle cx="${x}" cy="${y}" r="6.5" fill="var(--accent)"/>`;
+      }
+    });
+
+    s += '</svg>';
+    return s;
+  }
+
+  function renderDiagrams(chords) {
+    const el = document.getElementById('diagrams');
+    if (!chords || chords.length === 0 || chords.some(c => !c)) {
+      el.className = 'diagrams empty-state';
+      el.innerHTML = '<span class="diagrams-hint">Les schémas de tablature s\'affichent ici après génération.</span>';
+      return;
+    }
+    el.className = 'diagrams';
+    el.innerHTML = chords.map(c => `
+      <div class="diagram">
+        ${chordSVG(c)}
+        <span class="diagram-label">${c}</span>
+      </div>
+    `).join('');
+  }
 
   function setLength(n) {
     length = n;
@@ -225,6 +327,7 @@
     document.getElementById('btn3').classList.toggle('active', n === 3);
     document.getElementById('btn4').classList.toggle('active', n === 4);
     render(false);
+    renderDiagrams(null);
   }
 
   function render(settled) {
@@ -259,9 +362,11 @@
     if (reduceMotion) {
       current = final;
       render(true);
+      renderDiagrams(current);
       return;
     }
 
+    renderDiagrams(null);
     let ticks = 0;
     const maxTicks = 8;
     const interval = setInterval(() => {
@@ -272,6 +377,7 @@
         clearInterval(interval);
         current = final;
         render(true);
+        renderDiagrams(current);
       }
     }, 60);
   }
