@@ -28,51 +28,51 @@
   #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
   body::before, body::after {
     content: ""; position: fixed; z-index: 0; border-radius: 50%; filter: blur(80px); pointer-events: none;
-    width: 50vmax; height: 50vmax; animation: drift 24s ease-in-out infinite alternate;
+    width: 50vmax; height: 50vmax; animation: drift 16s ease-in-out infinite alternate;
   }
   body::before { background: var(--b1); top: -16vmax; left: -14vmax; }
   body::after { background: var(--b2); bottom: -18vmax; right: -14vmax; animation-delay: -10s; }
-  @keyframes drift { to { transform: translate(8vmax, 5vmax) scale(1.12); } }
+  @keyframes drift { to { transform: translate(12vmax, 8vmax) scale(1.2); } }
 
   .wrap { position: relative; z-index: 1; max-width: 840px; margin: 0 auto; text-align: center; }
-  h1 { font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: clamp(30px, 6.5vw, 46px); line-height: 1.12; margin: 0 0 8px; letter-spacing: -.015em; }
+  h1 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: clamp(28px, 5.5vw, 40px); line-height: 1.12; margin: 0 0 8px; letter-spacing: -.01em; }
   .sub { color: var(--soft); font-size: 16px; margin: 0 0 24px; }
   [hidden] { display: none !important; }
 
-  .seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; gap: 2px; }
-  .seg button { font: 600 14px 'Inter', sans-serif; color: var(--soft); background: transparent; border: 0; padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s; }
+  .seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 2px; }
+  .seg button { font: 600 14px 'Inter', sans-serif; color: var(--soft); background: transparent; border: 0; padding: 9px 18px; border-radius: 8px; cursor: pointer; transition: background .2s, color .2s; }
   .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
   .row { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 26px; }
   .pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-  .chip { font: 700 15px 'Fraunces', serif; color: var(--soft); background: transparent; border: 1.5px solid var(--line); padding: 6px 14px; border-radius: 999px; cursor: pointer; transition: all .15s; }
+  .chip { font: 600 15px 'Fraunces', serif; color: var(--soft); background: transparent; border: 1.5px solid var(--line); padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: all .15s; }
   .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
   .chip:active { transform: scale(.94); }
 
   .progs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; width: 100%; }
-  .prog { text-align: left; font-family: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 12px 16px; cursor: pointer; transition: border-color .15s, transform .15s; }
+  .prog { text-align: left; font-family: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 12px 16px; cursor: pointer; transition: border-color .15s, transform .15s; }
   .prog:hover { transform: translateY(-2px); }
   .prog[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
   .prog b { display: block; font: 700 17px 'Fraunces', serif; }
   .prog span { color: var(--soft); font-size: 14px; }
 
-  .cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-bottom: 26px; min-height: 240px; }
-  .card { position: relative; width: 148px; padding: 12px 10px 10px; cursor: pointer; background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; box-shadow: 0 18px 40px -26px var(--shadow); transition: box-shadow .2s, transform .2s, border-color .2s; }
+  .cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px 18px; margin-bottom: 26px; min-height: 220px; }
+  .card { position: relative; width: 112px; padding: 4px 4px 8px; cursor: pointer; transition: transform .2s; }
   .card:hover { transform: translateY(-3px); }
-  .card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 18px 36px -18px var(--accent); transform: translateY(-5px); }
-  .card.pop { animation: pop .36s cubic-bezier(.3,1.6,.5,1); }
-  @keyframes pop { 0% { transform: scale(.88) rotate(-3deg); } 100% { transform: none; } }
-  .name { display: inline-block; min-width: 62px; background: var(--accent); color: var(--accent-ink); font: 700 27px 'Fraunces', serif; padding: 2px 16px 4px; border-radius: 999px; }
-  .name.big { font-size: 46px; padding: 4px 30px 8px; }
-  .dia { margin-top: 6px; } .dia svg { width: 100%; height: auto; display: block; }
-  .lock { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 14px; cursor: pointer; opacity: .55; }
-  .lock[aria-pressed="true"] { opacity: 1; background: var(--bg); border-color: var(--accent); }
+  .card.active { transform: translateY(-5px); }
+  .card.active .name { color: var(--accent); border-color: var(--accent); }
+  .card.pop { animation: pop .35s ease-out; }
+  @keyframes pop { 0% { opacity: .15; transform: translateY(8px); } 100% { opacity: 1; transform: none; } }
+  .name { display: inline-block; min-width: 64px; color: var(--ink); font: 500 clamp(32px, 7vw, 44px) 'Fraunces', Georgia, serif; padding: 0 4px 8px; border-bottom: 2px solid var(--accent); transition: color .15s, border-color .15s; }
+  .name.big { font-size: clamp(44px, 12vw, 60px); padding: 0 14px 10px; }
+  .dia { width: 82px; margin: 12px auto 0; } .dia svg { width: 100%; height: auto; display: block; }
+  .dlabel { display: block; margin-top: 6px; font: 500 15px 'Fraunces', Georgia, serif; color: var(--ink); }
   .beats { display: flex; justify-content: center; gap: 6px; height: 10px; margin-top: 2px; }
   .beats i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: transform .1s; }
   .beats i.on { background: var(--accent); transform: scale(1.35); }
 
   .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 20px; }
-  button.primary, button.secondary { font: 600 16px 'Inter', sans-serif; border: 0; border-radius: 999px; padding: 14px 32px; cursor: pointer; transition: transform .15s; }
-  .primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 12px 24px -14px var(--accent); }
+  button.primary, button.secondary { font: 600 16px 'Inter', sans-serif; border: 0; border-radius: 10px; padding: 13px 30px; cursor: pointer; transition: transform .15s; }
+  .primary { background: var(--accent); color: var(--accent-ink);  }
   .secondary { background: var(--ink); color: var(--bg); }
   button.primary:hover, button.secondary:hover { transform: translateY(-2px); }
   button.primary:active, button.secondary:active { transform: scale(.97); }
@@ -80,8 +80,8 @@
   .tempo b { color: var(--ink); } input[type=range] { accent-color: var(--accent); width: 170px; }
   .hint { color: var(--soft); font-size: 13px; margin: 20px 0 0; }
 
-  .stage { background: var(--surface); border: 1.5px solid var(--line); border-radius: 24px; padding: 26px 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 18px 40px -26px var(--shadow); }
-  .stage .dia { width: 190px; margin: 12px auto 0; cursor: pointer; }
+  .stage { background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px; padding: 26px 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 18px 40px -26px var(--shadow); }
+  .stage .dia { width: 150px; margin: 12px auto 0; cursor: pointer; }
   .dtop { display: flex; justify-content: space-between; font-size: 15px; color: var(--soft); margin-bottom: 8px; }
   .dtop b { color: var(--ink); font: 700 22px 'Fraunces', serif; }
   .bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; margin-bottom: 18px; }
@@ -92,8 +92,7 @@
   .dbest { color: var(--soft); margin: 0 0 18px; }
 
   button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-  @media (max-width: 440px) { .card { width: calc(50% - 7px); } }
-  @media (prefers-reduced-motion: reduce) { body::before, body::after { animation: none; } .card, .card.pop, .chip, .bar i { animation: none; transition: none; } }
+  @media (max-width: 440px) { .card { width: calc(33.333% - 10px); } }
 </style>
 </head>
 <body>
@@ -121,10 +120,10 @@
     <div class="cards" id="cards" aria-live="polite"></div>
     <div class="actions">
       <button type="button" class="primary" id="gen">Tirer au sort</button>
-      <button type="button" class="secondary" id="play">▶ Jouer la suite</button>
+      <button type="button" class="secondary" id="play">Jouer la suite</button>
     </div>
     <div class="tempo"><label for="bpm">Tempo <b id="bpmv">80</b> BPM</label><input type="range" id="bpm" min="50" max="140" value="80"></div>
-    <p class="hint">Touche un accord pour l’écouter. Le cadenas le garde au prochain tirage. Barre d’espace : nouveau tirage.</p>
+    <p class="hint">Touche un accord pour l’écouter. Barre d’espace : nouveau tirage.</p>
   </section>
 
   <section class="stage" id="stage" hidden></section>
@@ -139,7 +138,7 @@
     ['Pop en Sol','G D Em C'], ['Années 50 en Do','C Am Dm G'], ['Rock en La','A D E D'],
     ['Mineur en La','Am Dm E Am'], ['Ballade en Sol','Em C G D'], ['Jazzy en Do','Dm G C Am']
   ];
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce = false; // animations toujours actives
   const $ = id => document.getElementById(id);
   let mode = 'tirage', length = 4, pool = new Set(CHORDS), cards = [], playing = false, step = 0, timer = null, ac = null, busy = false, energy = 0, progIdx = -1;
   let dur = 60, dState = 'idle', dLeft = 0, dScore = 0, dCur = '', dNext = '', dTimer = null, newRec = false;
@@ -179,31 +178,37 @@
   /* ---------- Fond animé : cordes qui vibrent + notes qui flottent ---------- */
   const cv = $('bg'), cx = cv.getContext('2d');
   let W, H, col = 'rgba(0,0,0,.2)', t0 = 0;
-  const notes = Array.from({ length: 9 }, (_, i) => ({ x: Math.random(), y: Math.random(), s: 24 + Math.random() * 26, v: .00008 + Math.random() * .00014, p: Math.random() * 6, g: i % 2 ? '♪' : '♫' }));
   function size() {
     const d = devicePixelRatio || 1; W = innerWidth; H = innerHeight;
     cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0);
     col = getComputedStyle(document.documentElement).getPropertyValue('--string').trim(); draw();
   }
+  const se = [0,0,0,0,0,0];
+  const dust = Array.from({ length: 46 }, () => ({ x: Math.random(), y: Math.random(), r: .8 + Math.random() * 2, v: .00005 + Math.random() * .00012, p: Math.random() * 6 }));
   function draw() {
     cx.clearRect(0, 0, W, H);
-    for (let i = 0; i < 6; i++) {
-      const y = H * (.1 + i * .16);
-      cx.strokeStyle = col; cx.lineWidth = 1 + i * .45; cx.beginPath();
-      for (let x = 0; x <= W; x += 10) {
-        const a = (2.5 + energy * 9) * Math.sin(Math.PI * x / W);
-        const yy = y + a * Math.sin(x * .011 * (1 + i * .12) + t0 * (1.3 + i * .3) + i * 2);
-        x ? cx.lineTo(x, yy) : cx.moveTo(x, yy);
+    for (let pass = 0; pass < 2; pass++) {
+      cx.globalAlpha = pass ? .45 : 1;
+      for (let i = 0; i < 6; i++) {
+        const y = H * (.1 + i * .16) + pass * H * .075;
+        cx.strokeStyle = col; cx.lineWidth = pass ? 1 : 1 + i * .45; cx.beginPath();
+        for (let x = 0; x <= W; x += 10) {
+          const a = (3.5 + (energy + se[i]) * 10) * Math.sin(Math.PI * x / W);
+          const yy = y + a * Math.sin(x * .011 * (1 + i * .12 + pass * .3) + t0 * (1.5 + i * .3 - pass * .5) + i * 2 + pass * 3);
+          x ? cx.lineTo(x, yy) : cx.moveTo(x, yy);
+        }
+        cx.stroke();
       }
-      cx.stroke();
     }
-    cx.fillStyle = col; cx.globalAlpha = .7;
-    notes.forEach(n => { cx.font = n.s + 'px serif'; cx.fillText(n.g, n.x * W + Math.sin(t0 * .6 + n.p) * 24, n.y * H); });
+    cx.fillStyle = col; cx.globalAlpha = .8;
+    dust.forEach(d => { cx.beginPath(); cx.arc(d.x * W + Math.sin(t0 * .5 + d.p) * 18, d.y * H, d.r, 0, 6.283); cx.fill(); });
     cx.globalAlpha = 1;
   }
   function loop() {
-    t0 += .016; energy *= .975;
-    notes.forEach(n => { n.y -= n.v * 16 * 1; if (n.y < -.08) { n.y = 1.08; n.x = Math.random(); } });
+    t0 += .02; energy *= .975;
+    if (Math.random() < .012) se[Math.floor(Math.random() * 6)] = 1.5;
+    for (let i = 0; i < 6; i++) se[i] *= .965;
+    dust.forEach(d => { d.y -= d.v * 16; if (d.y < -.02) { d.y = 1.02; d.x = Math.random(); } });
     draw(); requestAnimationFrame(loop);
   }
   addEventListener('resize', size);
@@ -217,14 +222,13 @@
   }
   function paint(i, pop, override) {
     const el = $('cards').children[i], name = override || cards[i].name;
-    el.querySelector('.name').textContent = name; el.querySelector('.dia').innerHTML = chordSVG(name);
+    el.querySelector('.name').textContent = name; el.querySelector('.dia').innerHTML = chordSVG(name); el.querySelector('.dlabel').textContent = name;
     if (pop && !reduce) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
   }
   function renderAll() {
     $('cards').innerHTML = cards.map((c, i) => `
       <div class="card" data-i="${i}">
-        <button type="button" class="lock" aria-pressed="${c.locked}" aria-label="Garder cet accord">${c.locked ? '🔒' : '🔓'}</button>
-        <span class="name"></span><div class="dia"></div>
+        <span class="name"></span><div class="dia"></div><span class="dlabel"></span>
         <div class="beats"><i></i><i></i><i></i><i></i></div>
       </div>`).join('');
     cards.forEach((_, i) => paint(i));
@@ -261,8 +265,8 @@
     click(beat === 0); step++;
     timer = setTimeout(tick, 60000 / +$('bpm').value);
   }
-  function startPlay() { audio(); playing = true; step = 0; $('play').textContent = '■ Stop'; tick(); }
-  function stopPlay() { clearTimeout(timer); playing = false; $('play').textContent = '▶ Jouer la suite'; mark(-1, -1); }
+  function startPlay() { audio(); playing = true; step = 0; $('play').textContent = 'Arrêter'; tick(); }
+  function stopPlay() { clearTimeout(timer); playing = false; $('play').textContent = 'Jouer la suite'; mark(-1, -1); }
 
   /* ---------- Progressions ---------- */
   function progSel(i) { progIdx = i; $('progs').querySelectorAll('.prog').forEach((b, k) => b.setAttribute('aria-pressed', k === i)); }
@@ -351,9 +355,7 @@
   $('progs').addEventListener('click', e => { const b = e.target.closest('.prog'); if (b) loadProg(+b.dataset.i); });
   $('cards').addEventListener('click', e => {
     const card = e.target.closest('.card'); if (!card || busy) return; const i = +card.dataset.i;
-    const l = e.target.closest('.lock');
-    if (l) { cards[i].locked = !cards[i].locked; l.setAttribute('aria-pressed', cards[i].locked); l.textContent = cards[i].locked ? '🔒' : '🔓'; }
-    else strum(cards[i].name);
+    strum(cards[i].name);
   });
   $('gen').onclick = generate;
   $('play').onclick = () => playing ? stopPlay() : startPlay();
