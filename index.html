@@ -3,387 +3,365 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Générateur de suites d'accords</title>
+<title>Générateur de suites d’accords</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f5efe3;
-    --surface: #ece1cd;
-    --surface-2: #e2d3b8;
-    --ink: #2b2119;
-    --ink-soft: #6b5d4c;
-    --accent: #a96f2b;
-    --accent-ink: #fbf6ec;
-    --line: rgba(43, 33, 25, 0.16);
-    --shadow: rgba(74, 52, 26, 0.18);
+    --bg: #f1e6cf; --surface: #fffaf0; --ink: #231a12; --soft: #6e5c48;
+    --accent: #a84a14; --accent-ink: #fff6e6; --c: var(--accent);
+    --line: rgba(35,26,18,.18); --shadow: rgba(74,45,15,.28);
+    --string: rgba(35,26,18,.22); --b1: rgba(214,140,50,.30); --b2: rgba(120,150,110,.22);
   }
-
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #211710;
-      --surface: #2c2016;
-      --surface-2: #392a1c;
-      --ink: #f2e9d8;
-      --ink-soft: #bba98d;
-      --accent: #dcaa53;
-      --accent-ink: #241a10;
-      --line: rgba(242, 233, 216, 0.14);
-      --shadow: rgba(0, 0, 0, 0.45);
+    :root {
+      --bg: #1b130d; --surface: #2a1e14; --ink: #f5ead6; --soft: #bfa98a;
+      --accent: #e8a33d; --accent-ink: #1b130d;
+      --line: rgba(245,234,214,.16); --shadow: rgba(0,0,0,.55);
+      --string: rgba(232,163,61,.30); --b1: rgba(232,163,61,.14); --b2: rgba(160,90,40,.18);
     }
   }
-
-  :root[data-theme="dark"] {
-    --bg: #211710;
-    --surface: #2c2016;
-    --surface-2: #392a1c;
-    --ink: #f2e9d8;
-    --ink-soft: #bba98d;
-    --accent: #dcaa53;
-    --accent-ink: #241a10;
-    --line: rgba(242, 233, 216, 0.14);
-    --shadow: rgba(0, 0, 0, 0.45);
-  }
-
   * { box-sizing: border-box; }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
+  html, body { margin: 0; min-height: 100%; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; padding: 34px 16px 48px; overflow-x: hidden; }
+  #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  body::before, body::after {
+    content: ""; position: fixed; z-index: 0; border-radius: 50%; filter: blur(80px); pointer-events: none;
+    width: 50vmax; height: 50vmax; animation: drift 24s ease-in-out infinite alternate;
   }
+  body::before { background: var(--b1); top: -16vmax; left: -14vmax; }
+  body::after { background: var(--b2); bottom: -18vmax; right: -14vmax; animation-delay: -10s; }
+  @keyframes drift { to { transform: translate(8vmax, 5vmax) scale(1.12); } }
 
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 18px;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
+  .wrap { position: relative; z-index: 1; max-width: 840px; margin: 0 auto; text-align: center; }
+  h1 { font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: clamp(30px, 6.5vw, 46px); line-height: 1.12; margin: 0 0 8px; letter-spacing: -.015em; }
+  .sub { color: var(--soft); font-size: 16px; margin: 0 0 24px; }
+  [hidden] { display: none !important; }
 
-  .card {
-    width: 100%;
-    max-width: 560px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 22px;
-    padding: 44px 34px 34px;
-    text-align: center;
-    box-shadow: 0 24px 60px -30px var(--shadow);
-  }
+  .seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; gap: 2px; }
+  .seg button { font: 600 14px 'Inter', sans-serif; color: var(--soft); background: transparent; border: 0; padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .row { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 26px; }
+  .pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .chip { font: 700 15px 'Fraunces', serif; color: var(--soft); background: transparent; border: 1.5px solid var(--line); padding: 6px 14px; border-radius: 999px; cursor: pointer; transition: all .15s; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .chip:active { transform: scale(.94); }
 
-  h1 {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 500;
-    font-size: clamp(24px, 4.4vw, 32px);
-    line-height: 1.25;
-    margin: 0 0 8px;
-    letter-spacing: -0.01em;
-  }
+  .progs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; width: 100%; }
+  .prog { text-align: left; font-family: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 12px 16px; cursor: pointer; transition: border-color .15s, transform .15s; }
+  .prog:hover { transform: translateY(-2px); }
+  .prog[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .prog b { display: block; font: 700 17px 'Fraunces', serif; }
+  .prog span { color: var(--soft); font-size: 14px; }
 
-  .sub {
-    color: var(--ink-soft);
-    font-size: 15px;
-    margin: 0 0 30px;
-    line-height: 1.5;
-  }
+  .cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-bottom: 26px; min-height: 240px; }
+  .card { position: relative; width: 148px; padding: 12px 10px 10px; cursor: pointer; background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; box-shadow: 0 18px 40px -26px var(--shadow); transition: box-shadow .2s, transform .2s, border-color .2s; }
+  .card:hover { transform: translateY(-3px); }
+  .card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 18px 36px -18px var(--accent); transform: translateY(-5px); }
+  .card.pop { animation: pop .36s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes pop { 0% { transform: scale(.88) rotate(-3deg); } 100% { transform: none; } }
+  .name { display: inline-block; min-width: 62px; background: var(--accent); color: var(--accent-ink); font: 700 27px 'Fraunces', serif; padding: 2px 16px 4px; border-radius: 999px; }
+  .name.big { font-size: 46px; padding: 4px 30px 8px; }
+  .dia { margin-top: 6px; } .dia svg { width: 100%; height: auto; display: block; }
+  .lock { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 14px; cursor: pointer; opacity: .55; }
+  .lock[aria-pressed="true"] { opacity: 1; background: var(--bg); border-color: var(--accent); }
+  .beats { display: flex; justify-content: center; gap: 6px; height: 10px; margin-top: 2px; }
+  .beats i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: transform .1s; }
+  .beats i.on { background: var(--accent); transform: scale(1.35); }
 
-  .switch {
-    display: inline-flex;
-    background: var(--surface-2);
-    border-radius: 999px;
-    padding: 4px;
-    margin-bottom: 34px;
-    gap: 2px;
-  }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 20px; }
+  button.primary, button.secondary { font: 600 16px 'Inter', sans-serif; border: 0; border-radius: 999px; padding: 14px 32px; cursor: pointer; transition: transform .15s; }
+  .primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 12px 24px -14px var(--accent); }
+  .secondary { background: var(--ink); color: var(--bg); }
+  button.primary:hover, button.secondary:hover { transform: translateY(-2px); }
+  button.primary:active, button.secondary:active { transform: scale(.97); }
+  .tempo { display: inline-flex; align-items: center; gap: 12px; color: var(--soft); font-size: 14px; }
+  .tempo b { color: var(--ink); } input[type=range] { accent-color: var(--accent); width: 170px; }
+  .hint { color: var(--soft); font-size: 13px; margin: 20px 0 0; }
 
-  .switch button {
-    border: none;
-    background: transparent;
-    color: var(--ink-soft);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 9px 20px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
-  }
+  .stage { background: var(--surface); border: 1.5px solid var(--line); border-radius: 24px; padding: 26px 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 18px 40px -26px var(--shadow); }
+  .stage .dia { width: 190px; margin: 12px auto 0; cursor: pointer; }
+  .dtop { display: flex; justify-content: space-between; font-size: 15px; color: var(--soft); margin-bottom: 8px; }
+  .dtop b { color: var(--ink); font: 700 22px 'Fraunces', serif; }
+  .bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; margin-bottom: 18px; }
+  .bar i { display: block; height: 100%; background: var(--accent); transition: width 1s linear; }
+  .dnext { color: var(--soft); margin: 10px 0 16px; } .dnext b { color: var(--ink); font-family: 'Fraunces', serif; font-size: 20px; }
+  .dtext { color: var(--soft); line-height: 1.5; margin: 0 0 12px; }
+  .dres { font: 700 26px 'Fraunces', serif; margin: 6px 0; }
+  .dbest { color: var(--soft); margin: 0 0 18px; }
 
-  .switch button.active {
-    background: var(--accent);
-    color: var(--accent-ink);
-  }
-
-  .switch button:focus-visible,
-  .generate:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-  }
-
-  .slots {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 14px;
-    min-height: 96px;
-    align-items: center;
-    margin-bottom: 36px;
-  }
-
-  .slot {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 500;
-    font-size: clamp(30px, 7vw, 44px);
-    min-width: 64px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--line);
-    color: var(--ink);
-    transition: color 0.15s ease, border-color 0.3s ease;
-  }
-
-  .slot.empty {
-    color: var(--ink-soft);
-  }
-
-  .slot.settled {
-    border-color: var(--accent);
-  }
-
-  .generate {
-    font-family: inherit;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--accent-ink);
-    background: var(--accent);
-    border: none;
-    padding: 15px 38px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 10px 24px -12px var(--shadow);
-  }
-
-  .generate:hover {
-    transform: translateY(-1px);
-  }
-
-  .generate:active {
-    transform: translateY(0px) scale(0.98);
-  }
-
-  .diagrams {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 8px;
-    min-height: 118px;
-    align-items: flex-start;
-  }
-
-  .diagrams.empty-state {
-    align-items: center;
-  }
-
-  .diagrams-hint {
-    color: var(--ink-soft);
-    font-size: 13px;
-  }
-
-  .diagram {
-    width: 78px;
-  }
-
-  .diagram svg {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  .diagram-label {
-    display: block;
-    margin-top: 6px;
-    font-family: 'Fraunces', Georgia, serif;
-    font-size: 15px;
-    color: var(--ink);
-  }
-
-  .pool {
-    margin-top: 30px;
-    padding-top: 22px;
-    border-top: 1px solid var(--line);
-    color: var(--ink-soft);
-    font-size: 13px;
-    line-height: 1.7;
-  }
-
-  .pool strong {
-    color: var(--ink);
-    font-weight: 600;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .generate, .slot { transition: none; }
-  }
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  @media (max-width: 440px) { .card { width: calc(50% - 7px); } }
+  @media (prefers-reduced-motion: reduce) { body::before, body::after { animation: none; } .card, .card.pop, .chip, .bar i { animation: none; transition: none; } }
 </style>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<main class="wrap">
+  <h1>Suites d’accords</h1>
+  <p class="sub">Tire au sort, suis une progression ou relève le défi.</p>
 
-<main class="card">
-  <h1>Génère une suite d'accords</h1>
-  <p class="sub">Choisis une longueur, appuie sur le bouton, et joue ce qui sort.</p>
-
-  <div class="switch" role="group" aria-label="Nombre d'accords">
-    <button type="button" id="btn3" onclick="setLength(3)">3 accords</button>
-    <button type="button" id="btn4" onclick="setLength(4)" class="active">4 accords</button>
+  <div class="row">
+    <div class="seg" id="modeSeg" role="group" aria-label="Mode">
+      <button type="button" data-m="tirage" aria-pressed="true">Tirage au sort</button>
+      <button type="button" data-m="prog" aria-pressed="false">Progressions</button>
+      <button type="button" data-m="defi" aria-pressed="false">Défi</button>
+    </div>
+    <div class="seg" id="lenSeg" role="group" aria-label="Nombre d’accords"></div>
+    <div class="seg" id="durSeg" role="group" aria-label="Durée du défi" hidden>
+      <button type="button" data-d="30" aria-pressed="false">30 secondes</button>
+      <button type="button" data-d="60" aria-pressed="true">60 secondes</button>
+    </div>
+    <div class="pool" id="pool" role="group" aria-label="Accords utilisés"></div>
+    <div class="progs" id="progs" hidden></div>
   </div>
 
-  <div class="slots" id="slots" aria-live="polite"></div>
+  <section id="cardsBox">
+    <div class="cards" id="cards" aria-live="polite"></div>
+    <div class="actions">
+      <button type="button" class="primary" id="gen">Tirer au sort</button>
+      <button type="button" class="secondary" id="play">▶ Jouer la suite</button>
+    </div>
+    <div class="tempo"><label for="bpm">Tempo <b id="bpmv">80</b> BPM</label><input type="range" id="bpm" min="50" max="140" value="80"></div>
+    <p class="hint">Touche un accord pour l’écouter. Le cadenas le garde au prochain tirage. Barre d’espace : nouveau tirage.</p>
+  </section>
 
-  <button type="button" class="generate" onclick="generate()">Générer</button>
-
-  <div class="diagrams empty-state" id="diagrams" aria-live="polite">
-    <span class="diagrams-hint">Les schémas de tablature s'affichent ici après génération.</span>
-  </div>
-
-  <p class="pool"><strong>Accords utilisés</strong><br>C · A · Am · E · Em · D · Dm · G</p>
+  <section class="stage" id="stage" hidden></section>
 </main>
 
 <script>
-  const CHORDS = ['C', 'A', 'Am', 'E', 'Em', 'D', 'Dm', 'G'];
-  // Position ouverte, du Mi grave (corde 6) au Mi aigu (corde 1).
-  // 'x' = corde étouffée, 0 = corde à vide, 1-4 = numéro de case.
-  const SHAPES = {
-    C:  ['x', 3, 2, 0, 1, 0],
-    A:  ['x', 0, 2, 2, 2, 0],
-    Am: ['x', 0, 2, 2, 1, 0],
-    E:  [0, 2, 2, 1, 0, 0],
-    Em: [0, 2, 2, 0, 0, 0],
-    D:  ['x', 'x', 0, 2, 3, 2],
-    Dm: ['x', 'x', 0, 2, 3, 1],
-    G:  [3, 2, 0, 0, 0, 3]
-  };
-  let length = 4;
-  let current = new Array(length).fill(null);
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CHORDS = ['C','A','Am','E','Em','D','Dm','G'];
+  // Du Mi grave (corde 6) au Mi aigu (corde 1). 'x' = étouffée, 0 = à vide, 1-4 = case.
+  const SHAPES = { C:['x',3,2,0,1,0], A:['x',0,2,2,2,0], Am:['x',0,2,2,1,0], E:[0,2,2,1,0,0], Em:[0,2,2,0,0,0], D:['x','x',0,2,3,2], Dm:['x','x',0,2,3,1], G:[3,2,0,0,0,3] };
+  const OPEN = [40,45,50,55,59,64];
+  const PROGS = [
+    ['Pop en Sol','G D Em C'], ['Années 50 en Do','C Am Dm G'], ['Rock en La','A D E D'],
+    ['Mineur en La','Am Dm E Am'], ['Ballade en Sol','Em C G D'], ['Jazzy en Do','Dm G C Am']
+  ];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = id => document.getElementById(id);
+  let mode = 'tirage', length = 4, pool = new Set(CHORDS), cards = [], playing = false, step = 0, timer = null, ac = null, busy = false, energy = 0, progIdx = -1;
+  let dur = 60, dState = 'idle', dLeft = 0, dScore = 0, dCur = '', dNext = '', dTimer = null, newRec = false;
 
   function chordSVG(name) {
-    const frets = SHAPES[name];
-    const xs = [10, 26, 42, 58, 74, 90];
-    const fretY = [20, 36, 52, 68, 84];
-    let s = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
-
-    // cordes
-    xs.forEach(x => {
-      s += `<line x1="${x}" y1="20" x2="${x}" y2="84" stroke="var(--ink-soft)" stroke-width="1.2"/>`;
+    const xs = [10,26,42,58,74,90], ys = [20,36,52,68,84];
+    let s = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
+    xs.forEach(x => s += `<line x1="${x}" y1="20" x2="${x}" y2="84" stroke="var(--soft)" stroke-width="1.2"/>`);
+    ys.forEach((y,i) => s += `<line x1="10" y1="${y}" x2="90" y2="${y}" stroke="var(--soft)" stroke-width="${i?1:3.2}"/>`);
+    SHAPES[name].forEach((f,i) => {
+      if (f === 'x') s += `<text x="${xs[i]}" y="12" text-anchor="middle" font-size="12" fill="var(--soft)">×</text>`;
+      else if (f === 0) s += `<circle cx="${xs[i]}" cy="8" r="4" fill="none" stroke="var(--soft)" stroke-width="1.5"/>`;
+      else s += `<circle cx="${xs[i]}" cy="${20+16*(f-.5)}" r="6.8" fill="var(--c)"/>`;
     });
+    return s + '</svg>';
+  }
 
-    // frettes (la première plus épaisse = sillet)
-    fretY.forEach((y, i) => {
-      s += `<line x1="10" y1="${y}" x2="90" y2="${y}" stroke="var(--ink-soft)" stroke-width="${i === 0 ? 3 : 1}"/>`;
-    });
+  /* ---------- Son ---------- */
+  function audio() { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); }
+  function pluck(midi, t, vol) {
+    const o = ac.createOscillator(), g = ac.createGain(), f = ac.createBiquadFilter();
+    o.type = 'sawtooth'; o.frequency.value = 440 * Math.pow(2, (midi - 69) / 12);
+    f.type = 'lowpass'; f.frequency.setValueAtTime(3400, t); f.frequency.exponentialRampToValueAtTime(450, t + 1);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.11 * vol, t + .008); g.gain.exponentialRampToValueAtTime(.0008, t + 1.8);
+    o.connect(f); f.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 1.9);
+  }
+  function strum(name, vol = 1) {
+    audio(); energy = Math.min(energy + 1.2 * vol, 3);
+    let k = 0; SHAPES[name].forEach((f,i) => { if (f !== 'x') pluck(OPEN[i] + f, ac.currentTime + .02 + (k++) * .04, vol); });
+  }
+  function click(strong) {
+    const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+    o.frequency.value = strong ? 1500 : 1000; g.gain.setValueAtTime(.05, t); g.gain.exponentialRampToValueAtTime(.001, t + .05);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .06);
+  }
 
-    // symboles et positions des doigts
-    frets.forEach((f, i) => {
-      const x = xs[i];
-      if (f === 'x') {
-        s += `<text x="${x}" y="11" text-anchor="middle" font-size="11" fill="var(--ink-soft)">×</text>`;
-      } else if (f === 0) {
-        s += `<circle cx="${x}" cy="8" r="4" fill="none" stroke="var(--ink-soft)" stroke-width="1.4"/>`;
-      } else {
-        const y = 20 + 16 * (f - 0.5);
-        s += `<circle cx="${x}" cy="${y}" r="6.5" fill="var(--accent)"/>`;
+  /* ---------- Fond animé : cordes qui vibrent + notes qui flottent ---------- */
+  const cv = $('bg'), cx = cv.getContext('2d');
+  let W, H, col = 'rgba(0,0,0,.2)', t0 = 0;
+  const notes = Array.from({ length: 9 }, (_, i) => ({ x: Math.random(), y: Math.random(), s: 24 + Math.random() * 26, v: .00008 + Math.random() * .00014, p: Math.random() * 6, g: i % 2 ? '♪' : '♫' }));
+  function size() {
+    const d = devicePixelRatio || 1; W = innerWidth; H = innerHeight;
+    cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0);
+    col = getComputedStyle(document.documentElement).getPropertyValue('--string').trim(); draw();
+  }
+  function draw() {
+    cx.clearRect(0, 0, W, H);
+    for (let i = 0; i < 6; i++) {
+      const y = H * (.1 + i * .16);
+      cx.strokeStyle = col; cx.lineWidth = 1 + i * .45; cx.beginPath();
+      for (let x = 0; x <= W; x += 10) {
+        const a = (2.5 + energy * 9) * Math.sin(Math.PI * x / W);
+        const yy = y + a * Math.sin(x * .011 * (1 + i * .12) + t0 * (1.3 + i * .3) + i * 2);
+        x ? cx.lineTo(x, yy) : cx.moveTo(x, yy);
       }
-    });
-
-    s += '</svg>';
-    return s;
-  }
-
-  function renderDiagrams(chords) {
-    const el = document.getElementById('diagrams');
-    if (!chords || chords.length === 0 || chords.some(c => !c)) {
-      el.className = 'diagrams empty-state';
-      el.innerHTML = '<span class="diagrams-hint">Les schémas de tablature s\'affichent ici après génération.</span>';
-      return;
+      cx.stroke();
     }
-    el.className = 'diagrams';
-    el.innerHTML = chords.map(c => `
-      <div class="diagram">
-        ${chordSVG(c)}
-        <span class="diagram-label">${c}</span>
-      </div>
-    `).join('');
+    cx.fillStyle = col; cx.globalAlpha = .7;
+    notes.forEach(n => { cx.font = n.s + 'px serif'; cx.fillText(n.g, n.x * W + Math.sin(t0 * .6 + n.p) * 24, n.y * H); });
+    cx.globalAlpha = 1;
   }
-
-  function setLength(n) {
-    length = n;
-    current = new Array(length).fill(null);
-    document.getElementById('btn3').classList.toggle('active', n === 3);
-    document.getElementById('btn4').classList.toggle('active', n === 4);
-    render(false);
-    renderDiagrams(null);
+  function loop() {
+    t0 += .016; energy *= .975;
+    notes.forEach(n => { n.y -= n.v * 16 * 1; if (n.y < -.08) { n.y = 1.08; n.x = Math.random(); } });
+    draw(); requestAnimationFrame(loop);
   }
+  addEventListener('resize', size);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', size);
+  size(); if (!reduce) loop();
 
-  function render(settled) {
-    const container = document.getElementById('slots');
-    container.innerHTML = '';
-    for (let i = 0; i < length; i++) {
-      const el = document.createElement('span');
-      const value = current[i];
-      el.className = 'slot' + (value ? '' : ' empty') + (settled ? ' settled' : '');
-      el.textContent = value || '–';
-      container.appendChild(el);
-    }
+  /* ---------- Tirage ---------- */
+  function pick(a, b) {
+    const all = [...pool], ok = all.filter(c => c !== a && c !== b);
+    const l = ok.length ? ok : all; return l[Math.floor(Math.random() * l.length)];
   }
-
-  function pickChord(previous) {
-    let choice = previous;
-    while (choice === previous) {
-      choice = CHORDS[Math.floor(Math.random() * CHORDS.length)];
-    }
-    return choice;
+  function paint(i, pop, override) {
+    const el = $('cards').children[i], name = override || cards[i].name;
+    el.querySelector('.name').textContent = name; el.querySelector('.dia').innerHTML = chordSVG(name);
+    if (pop && !reduce) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
   }
-
+  function renderAll() {
+    $('cards').innerHTML = cards.map((c, i) => `
+      <div class="card" data-i="${i}">
+        <button type="button" class="lock" aria-pressed="${c.locked}" aria-label="Garder cet accord">${c.locked ? '🔒' : '🔓'}</button>
+        <span class="name"></span><div class="dia"></div>
+        <div class="beats"><i></i><i></i><i></i><i></i></div>
+      </div>`).join('');
+    cards.forEach((_, i) => paint(i));
+  }
+  function syncLen() { $('lenSeg').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.n === length)); }
   function generate() {
-    const final = [];
-    let prev = null;
-    for (let i = 0; i < length; i++) {
-      const c = pickChord(prev);
-      final.push(c);
-      prev = c;
-    }
-
-    if (reduceMotion) {
-      current = final;
-      render(true);
-      renderDiagrams(current);
-      return;
-    }
-
-    renderDiagrams(null);
-    let ticks = 0;
-    const maxTicks = 8;
-    const interval = setInterval(() => {
-      current = current.map(() => CHORDS[Math.floor(Math.random() * CHORDS.length)]);
-      render(false);
-      ticks++;
-      if (ticks >= maxTicks) {
-        clearInterval(interval);
-        current = final;
-        render(true);
-        renderDiagrams(current);
-      }
-    }, 60);
+    if (busy) return; stopPlay(); progSel(-1);
+    const next = [];
+    for (let i = 0; i < length; i++) next[i] = cards[i].locked ? cards[i].name : pick(next[i-1], cards[i+1] && cards[i+1].locked ? cards[i+1].name : null);
+    const apply = i => { cards[i].name = next[i]; paint(i, true); };
+    if (reduce) { cards.forEach((_, i) => apply(i)); return; }
+    busy = true; let left = 0;
+    cards.forEach((c, i) => {
+      if (c.locked) return; left++; let n = 0; const total = 6 + i * 3;
+      const iv = setInterval(() => {
+        if (++n >= total) { clearInterval(iv); apply(i); if (--left === 0) busy = false; }
+        else paint(i, false, CHORDS[Math.floor(Math.random() * CHORDS.length)]);
+      }, 70);
+    });
+    if (!left) busy = false;
   }
 
-  render(false);
-</script>
+  /* ---------- Lecture ---------- */
+  function mark(i, beat) {
+    [...$('cards').children].forEach((el, k) => {
+      el.classList.toggle('active', k === i);
+      el.querySelectorAll('.beats i').forEach((d, b) => d.classList.toggle('on', k === i && b <= beat));
+    });
+  }
+  function tick() {
+    const beat = step % 4, i = Math.floor(step / 4) % length;
+    mark(i, beat);
+    if (beat === 0 || beat === 2) strum(cards[i].name, beat === 0 ? 1 : .7);
+    click(beat === 0); step++;
+    timer = setTimeout(tick, 60000 / +$('bpm').value);
+  }
+  function startPlay() { audio(); playing = true; step = 0; $('play').textContent = '■ Stop'; tick(); }
+  function stopPlay() { clearTimeout(timer); playing = false; $('play').textContent = '▶ Jouer la suite'; mark(-1, -1); }
 
+  /* ---------- Progressions ---------- */
+  function progSel(i) { progIdx = i; $('progs').querySelectorAll('.prog').forEach((b, k) => b.setAttribute('aria-pressed', k === i)); }
+  function loadProg(i) {
+    stopPlay(); progSel(i); length = 4; syncLen();
+    cards = PROGS[i][1].split(' ').map(name => ({ name, locked: false })); renderAll();
+  }
+
+  /* ---------- Défi ---------- */
+  const bestKey = () => 'defiBest' + dur;
+  function getBest() { try { return +localStorage.getItem(bestKey()) || 0; } catch (e) { return 0; } }
+  function setBest(n) { try { localStorage.setItem(bestKey(), n); } catch (e) {} }
+  function renderDefi() {
+    const s = $('stage'), best = getBest();
+    if (dState === 'idle') {
+      s.innerHTML = `<p class="dtext">Joue l’accord affiché, puis touche « Suivant » dès que tu as changé. Combien d’accords en ${dur} secondes ?</p>
+        <p class="dbest">${best ? 'Record : ' + best : 'Pas encore de record'}</p>
+        <button type="button" class="primary" data-act="go">Commencer</button>`;
+    } else if (dState === 'run') {
+      s.innerHTML = `<div class="dtop"><span>Temps <b id="dt">${dLeft}</b> s</span><span>Score <b id="ds">${dScore}</b></span></div>
+        <div class="bar"><i id="dbar" style="width:${dLeft / dur * 100}%"></i></div>
+        <span class="name big" id="dname">${dCur}</span><div class="dia" id="ddia" data-play>${chordSVG(dCur)}</div>
+        <p class="dnext">Ensuite : <b id="dnx">${dNext}</b></p>
+        <button type="button" class="primary" data-act="next">Suivant</button>`;
+      s.querySelector('[data-act=next]').focus();
+    } else {
+      s.innerHTML = `<p class="dres">${dScore} changement${dScore > 1 ? 's' : ''} en ${dur} s</p>
+        <p class="dbest">${newRec ? 'Nouveau record !' : 'Record : ' + best}</p>
+        <button type="button" class="primary" data-act="go">Rejouer</button>`;
+    }
+  }
+  function dGo() {
+    dState = 'run'; dLeft = dur; dScore = 0; newRec = false; dCur = pick(); dNext = pick(dCur); renderDefi();
+    clearInterval(dTimer);
+    requestAnimationFrame(() => { $('dbar').style.width = (dLeft - 1) / dur * 100 + '%'; });
+    dTimer = setInterval(() => {
+      dLeft--; $('dt').textContent = dLeft; $('dbar').style.width = Math.max(dLeft - 1, 0) / dur * 100 + '%';
+      if (dLeft <= 0) dEnd();
+    }, 1000);
+  }
+  function dNextChord() {
+    dScore++; dCur = dNext; dNext = pick(dCur);
+    $('ds').textContent = dScore; $('dname').textContent = dCur; $('ddia').innerHTML = chordSVG(dCur); $('dnx').textContent = dNext;
+  }
+  function dEnd() {
+    clearInterval(dTimer); dState = 'done';
+    if (dScore > getBest()) { setBest(dScore); newRec = dScore > 0; }
+    renderDefi();
+  }
+  function dStop() { clearInterval(dTimer); dState = 'idle'; }
+
+  /* ---------- Contrôles ---------- */
+  function setMode(m) {
+    mode = m; stopPlay(); dStop();
+    $('modeSeg').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === m));
+    $('lenSeg').hidden = m !== 'tirage'; $('pool').hidden = m === 'prog'; $('progs').hidden = m !== 'prog';
+    $('durSeg').hidden = m !== 'defi'; $('cardsBox').hidden = m === 'defi'; $('stage').hidden = m !== 'defi';
+    $('gen').hidden = m !== 'tirage';
+    if (m === 'prog' && progIdx < 0) loadProg(0); else if (m === 'prog') loadProg(progIdx);
+    if (m === 'defi') renderDefi();
+  }
+  $('modeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b && !busy) setMode(b.dataset.m); });
+  $('durSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return; dur = +b.dataset.d; dStop();
+    $('durSeg').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); renderDefi();
+  });
+  $('stage').addEventListener('click', e => {
+    const a = e.target.closest('[data-act]');
+    if (a) { a.dataset.act === 'next' ? dNextChord() : dGo(); }
+    else if (e.target.closest('[data-play]')) strum(dCur);
+  });
+  $('lenSeg').innerHTML = [3,4,5,6].map(n => `<button type="button" data-n="${n}" aria-pressed="${n === length}">${n} accords</button>`).join('');
+  $('lenSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || busy) return;
+    stopPlay(); progSel(-1); length = +b.dataset.n; syncLen();
+    cards = Array.from({ length }, (_, i) => cards[i] || { name: pick(cards[i-1] && cards[i-1].name), locked: false });
+    renderAll();
+  });
+  $('pool').innerHTML = CHORDS.map(c => `<button type="button" class="chip" data-c="${c}" aria-pressed="true">${c}</button>`).join('');
+  $('pool').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return; const c = b.dataset.c;
+    if (pool.has(c)) { if (pool.size <= 2) return; pool.delete(c); } else pool.add(c);
+    b.setAttribute('aria-pressed', pool.has(c));
+  });
+  $('progs').innerHTML = PROGS.map((p, i) => `<button type="button" class="prog" data-i="${i}" aria-pressed="false"><b>${p[0]}</b><span>${p[1].split(' ').join(' – ')}</span></button>`).join('');
+  $('progs').addEventListener('click', e => { const b = e.target.closest('.prog'); if (b) loadProg(+b.dataset.i); });
+  $('cards').addEventListener('click', e => {
+    const card = e.target.closest('.card'); if (!card || busy) return; const i = +card.dataset.i;
+    const l = e.target.closest('.lock');
+    if (l) { cards[i].locked = !cards[i].locked; l.setAttribute('aria-pressed', cards[i].locked); l.textContent = cards[i].locked ? '🔒' : '🔓'; }
+    else strum(cards[i].name);
+  });
+  $('gen').onclick = generate;
+  $('play').onclick = () => playing ? stopPlay() : startPlay();
+  $('bpm').oninput = e => $('bpmv').textContent = e.target.value;
+  document.addEventListener('keydown', e => { if (mode === 'tirage' && e.code === 'Space' && e.target === document.body) { e.preventDefault(); generate(); } });
+
+  for (let i = 0; i < length; i++) cards.push({ name: pick(cards[i-1] && cards[i-1].name), locked: false });
+  renderAll();
+</script>
 </body>
 </html>
